@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS public.alunos (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
+    nome VARCHAR(100),
+    cpf VARCHAR(11),
+    rg VARCHAR(9),
+    email VARCHAR(100)
+);
+
+INSERT INTO public.alunos (id, created_at, updated_at, deleted_at, nome, cpf, rg, email) 
+VALUES (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 1', '11111111111', '111111111', 'aluno1@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 2', '22222222222', '222222222', 'aluno2@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 3', '33333333333', '333333333', 'aluno3@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 4', '44444444444', '444444444', 'aluno4@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 5', '55555555555', '555555555', 'aluno5@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 6', '66666666666', '666666666', 'aluno6@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 7', '77777777777', '777777777', 'aluno7@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 8', '88888888888', '888888888', 'aluno8@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 9', '99999999999', '999999999', 'aluno9@email.com'),
+       (DEFAULT, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 'Aluno 10', '00000000000', '000000000', 'aluno10@email.com');
