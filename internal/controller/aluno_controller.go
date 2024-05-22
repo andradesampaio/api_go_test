@@ -36,7 +36,7 @@ func CriaNovoAluno(c *gin.Context) {
 	c.JSON(http.StatusOK, aluno)
 }
 
-func BuscaAluno(c *gin.Context){
+func BuscaAlunoPorId(c *gin.Context){
 	id := c.Params.ByName("id")
 	var aluno model.Aluno
     database.DB.First(&aluno, id)

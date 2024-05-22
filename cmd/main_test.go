@@ -1,9 +1,7 @@
 package main
 
 import (
-	"api-go-test/internal/controller"
-	"api-go-test/internal/database"
-	"api-go-test/internal/model"
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -12,25 +10,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"bytes"
+	"api-go-test/internal/database"
+	"api-go-test/internal/model"
+	"api-go-test/internal/controller"
 )
 
 var ID int
 
 func SetupDasRotasDeTeste() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
-	routers := gin.Default()
-	routers.GET("/alunos", controller.ExibeTodosAlunos)
-	routers.GET("/aluno/:id", controller.BuscaAluno)
-	routers.GET("/aluno/cpf/:cpf", controller.BuscaAlunoPorCpf)
-	routers.DELETE("/aluno/:id", controller.DeletaAluno)
-	routers.PATCH("/aluno/:id", controller.EditaAluno)
-	return routers
+	rotas := gin.Default()
+	return rotas
 }
 
-
 func CriaAlunoMock() {
-	aluno := model.Aluno{Nome: "João", CPF: "12345678901", RG: "123456789", Email: "joao@gmail.com"}
+	aluno := model.Aluno{Nome: "Nome do Aluno Teste", CPF: "12345678901", RG: "123456789"}
 	database.DB.Create(&aluno)
 	ID = int(aluno.ID)
 }
@@ -40,83 +34,76 @@ func DeletaAlunoMock() {
 	database.DB.Delete(&aluno, ID)
 }
 
-func TestListandoTodosOsAlunos(t *testing.T) {
-    database.Connect()
 
+func TestListaTodosOsAlunosHanlder(t *testing.T) {
+	database.Connect()
+	CriaAlunoMock()
+	defer DeletaAlunoMock()
 	r := SetupDasRotasDeTeste()
+	r.GET("/alunos", controller.ExibeTodosAlunos)
 	req, _ := http.NewRequest("GET", "/alunos", nil)
 	resposta := httptest.NewRecorder()
 	r.ServeHTTP(resposta, req)
-
-	assert.Equal(t, http.StatusOK, resposta.Code, "Deveria retornar status 200")
+	assert.Equal(t, http.StatusOK, resposta.Code)
 }
 
-func TestBuscaAlunoPorCPF(t *testing.T){
+func TestBucaAlunoPorCPFHandler(t *testing.T) {
 	database.Connect()
 	CriaAlunoMock()
 	defer DeletaAlunoMock()
-	
-
 	r := SetupDasRotasDeTeste()
-	req, _ := http.NewRequest("GET", "/aluno/cpf/12345678901", nil)
+	r.GET("/alunos/cpf/:cpf", controller.BuscaAlunoPorCpf)
+	req, _ := http.NewRequest("GET", "/alunos/cpf/12345678901", nil)
 	resposta := httptest.NewRecorder()
 	r.ServeHTTP(resposta, req)
-
-	assert.Equal(t, http.StatusOK, resposta.Code, "Deveria retornar status 200")
-
+	assert.Equal(t, http.StatusOK, resposta.Code)
 }
 
-func TestBuscaAlunoPorIDHandler(t *testing.T){
+func TestBuscaAlunoPorIDHandler(t *testing.T) {
 	database.Connect()
 	CriaAlunoMock()
 	defer DeletaAlunoMock()
-	
-
 	r := SetupDasRotasDeTeste()
-	req, _ := http.NewRequest("GET", "/aluno/"+strconv.Itoa(ID), nil)
+	r.GET("/alunos/:id", controller.BuscaAlunoPorId)
+	pathDaBusca := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("GET", pathDaBusca, nil)
 	resposta := httptest.NewRecorder()
 	r.ServeHTTP(resposta, req)
-
 	var alunoMock model.Aluno
 	json.Unmarshal(resposta.Body.Bytes(), &alunoMock)
-	assert.Equal(t, "João", alunoMock.Nome, "Deveria retornar o nome João")
-	assert.Equal(t, "12345678901", alunoMock.CPF, "Deveria retornar o CPF 12345678901")
-
+	assert.Equal(t, "Nome do Aluno Teste", alunoMock.Nome, "Os nomes devem ser iguais")
+	assert.Equal(t, "12345678901", alunoMock.CPF)
+	assert.Equal(t, "123456789", alunoMock.RG)
+	assert.Equal(t, http.StatusOK, resposta.Code)
 }
 
-func TestDeletaAlunoHandler(t *testing.T){
+func TestDeletaAlunoHandler(t *testing.T) {
+	database.Connect()
+	CriaAlunoMock()
+	r := SetupDasRotasDeTeste()
+	r.DELETE("/alunos/:id", controller.DeletaAluno)
+	pathDeBusca := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("DELETE", pathDeBusca, nil)
+	resposta := httptest.NewRecorder()
+	r.ServeHTTP(resposta, req)
+	assert.Equal(t, http.StatusOK, resposta.Code)
+}
+
+func TestEditaUmAlunoHandler(t *testing.T) {
 	database.Connect()
 	CriaAlunoMock()
 	defer DeletaAlunoMock()
-	
-
 	r := SetupDasRotasDeTeste()
-	req, _ := http.NewRequest("DELETE", "/aluno/"+strconv.Itoa(ID), nil)
+	r.PATCH("/alunos/:id", controller.EditaAluno)
+	aluno := model.Aluno{Nome: "Nome do Aluno Teste", CPF: "47123456789", RG: "123456700"}
+	valorJson, _ := json.Marshal(aluno)
+	pathParaEditar := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("PATCH", pathParaEditar, bytes.NewBuffer(valorJson))
 	resposta := httptest.NewRecorder()
 	r.ServeHTTP(resposta, req)
-
-	assert.Equal(t, http.StatusOK, resposta.Code, "Deveria retornar status 200")
-
-}
-
-func TestEditaAlunoHandler(t *testing.T){
-	database.Connect()
-	CriaAlunoMock()
-	defer DeletaAlunoMock()
-	
-	aluno := model.Aluno{Nome: "Maria", CPF: "12345678901", RG: "123456789", Email: "teste@email.com"}
-	payload, _ := json.Marshal(aluno)
-
-	r := SetupDasRotasDeTeste()
-	pathParaEditar := "/aluno/"+strconv.Itoa(ID)
-	req, _ := http.NewRequest("PATCH", pathParaEditar, bytes.NewBuffer(payload))
-
-	resposta := httptest.NewRecorder()
-	r.ServeHTTP(resposta, req)
-
-	var alunoMock model.Aluno
-	json.Unmarshal(resposta.Body.Bytes(), &alunoMock)
-
-	assert.Equal(t, http.StatusOK, resposta.Code, "Deveria retornar status 200")
-	assert.Equal(t, "Maria", alunoMock.Nome, "Deveria retornar o nome Maria")
+	var alunoMockAtualizado model.Aluno
+	json.Unmarshal(resposta.Body.Bytes(), &alunoMockAtualizado)
+	assert.Equal(t, "47123456789", alunoMockAtualizado.CPF)
+	assert.Equal(t, "123456700", alunoMockAtualizado.RG)
+	assert.Equal(t, "Nome do Aluno Teste", alunoMockAtualizado.Nome)
 }
