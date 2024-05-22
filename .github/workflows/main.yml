@@ -38,7 +38,7 @@ jobs:
     runs-on: ${{ matrix.os_version }}
     strategy:
      matrix:
-       os_version: ['ubuntu-latest', 'ubuntu-18.04']
+       os_version: ['ubuntu-latest']
     steps:
     - uses: actions/checkout@v3
     - name: Build
