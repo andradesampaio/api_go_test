@@ -11,7 +11,7 @@ func HandleRequests() {
 	r.Static("/assets", "../internal/assets")
 	r.GET("/alunos", controller.ExibeTodosAlunos)
 	r.POST("/alunos", controller.CriaNovoAluno)
-	r.GET("/aluno/:id", controller.BuscaAluno)
+	r.GET("/aluno/:id", controller.BuscaAlunoPorId)
 	r.DELETE("/aluno/:id", controller.DeletaAluno)
 	r.PATCH("/aluno/:id", controller.EditaAluno)
 	r.GET("/aluno/cpf/:cpf", controller.BuscaAlunoPorCpf)
