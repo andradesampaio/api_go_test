@@ -35,7 +35,7 @@ jobs:
   
   build:
     needs: test
-    runs-on: ${{ matrix.go_version }}
+    runs-on: ${{ matrix.os_version }}
     strategy:
      matrix:
        os_version: ['ubuntu-latest', 'ubuntu-18.04']
