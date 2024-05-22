@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         go_version: ['1.21', '>=1.22.1']
-        os_version: ['ubuntu-latest', 'ubuntu-18.04']
+        os_version: ['ubuntu-latest']
     steps:
     - uses: actions/checkout@v3
 
@@ -23,10 +23,12 @@ jobs:
         go-version: ${{ matrix.go_version }}
       
     - name: Build-DB
-      run: docker-compose build
+      working-directory: ./
+      run: infra/docker-compose build
       
     - name: Create-DB
-      run: docker-compose up -d
+      working-directory: ./
+      run: infra/docker-compose up -d
 
     - name: Test
       working-directory: ./
@@ -39,4 +41,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
+      working-directory: ./
       run: go build -v cmd/main.go
