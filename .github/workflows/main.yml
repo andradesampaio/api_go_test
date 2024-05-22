@@ -2,17 +2,18 @@ name: Go
 
 on:
   push:
-    branches: [ Aula_1 ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ Aula_1 ]
+    branches: [ '*' ]
 
 jobs:
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os_version }}
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '>=1.18']
+        os_version: ['ubuntu-latest', 'ubuntu-18.04']
     steps:
     - uses: actions/checkout@v3
 
@@ -28,16 +29,13 @@ jobs:
       run: docker-compose up -d
 
     - name: Test
-      run: go test -v main_test.go 
+      run: go test -v cmd/main_test.go 
       
   
   build:
     needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ['ubuntu-latest', 'ubuntu-18.04']
+    runs-on: ${{ matrix.os_version }}
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: go build -v main.go
+      run: go build -v cmd/main.go
