@@ -34,7 +34,6 @@ func DeletaAlunoMock() {
 	database.DB.Delete(&aluno, ID)
 }
 
-
 func TestListaTodosOsAlunosHanlder(t *testing.T) {
 	database.Connect()
 	CriaAlunoMock()
