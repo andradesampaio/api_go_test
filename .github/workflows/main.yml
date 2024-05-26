@@ -50,11 +50,16 @@ jobs:
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
-      with:
+      
+    - name: Save state
+      run: echo "{name}={api-go-test}" >> $GITHUB_STATE   
+      #with:
     # Artifact name
-        name: api-go-test
+      #  name: api-go-test
     # A file, directory or wildcard pattern that describes what to upload
-        path: main
+      #  path: main
+    - name: Save state
+      run: echo "{name}={value}" >> $GITHUB_STATE
 
   docker:
     needs: build
