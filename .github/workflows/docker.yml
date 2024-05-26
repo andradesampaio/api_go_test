@@ -25,10 +25,10 @@ jobs:
         username: draandes
         password: ${{ secrets.PASSWORD_DOCKER_HUB }} 
     # Build's context is the set of files located in the specified PATH or URL
-        context: .
+      #  context: .
     # Path to the Dockerfile
-        file: ./Dockerfile
+      #  file: ./Dockerfile
     # Push is a shorthand for --output=type=registry
-        push: true
+     #   push: true
     # List of tags
-        tags: draandes/go_api_test:${{github.ref_name}}
+       # tags: draandes/go_api_test:${{github.ref_name}}
